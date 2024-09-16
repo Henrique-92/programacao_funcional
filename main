@@ -1,0 +1,47 @@
+# Criptografia de senha
+def encrypt_password(password: str) -> str:
+    return f"encrypted_{password}"
+
+def store_password(username: str, password: str) -> None:
+    encrypted = encrypt_password(password)
+    database[username] = encrypted
+
+# Cadastro de usuário
+def register_user(username: str, password: str, email: str) -> bool:
+    if validate_email(email):
+        store_password(username, password)
+        return True
+    return False
+
+# Função lambda para validação de email
+validate_email = lambda email: "@" in email
+
+# Login de usuário
+def login_user(username: str, password: str) -> bool:
+    encrypted = encrypt_password(password)
+    return database.get(username) == encrypted
+
+# List comprehension para retornar todos os usuários cadastrados
+def get_all_users() -> list:
+    return [user for user in database.keys()]
+
+# Closure para validação de senha
+def get_password_validator(min_length: int):
+    def validate(password: str) -> bool:
+        return len(password) >= min_length
+    return validate
+
+# Função de alta ordem para processar todos os usuários
+def process_users(action):
+    for user in get_all_users():
+        action(user)
+
+# Exemplo de banco de dados
+database = {}
+
+# Exemplo de uso
+register_user('john_doe', 'password123', 'john@example.com')
+register_user('jane_doe', 'securepassword', 'jane@example.com')
+
+# Usando uma função de alta ordem para aplicar uma ação nos usuários
+process_users(lambda user: print(f"User: {user}"))
